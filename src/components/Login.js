@@ -1,68 +1,19 @@
-import { useState, useEffect } from "react";
-import {Link} from "react-router-dom"
-import api from "../api/posts"
-import Welcome from "../components/Welcome"
+import { useContext } from "react";
+import {Link, useHistory} from "react-router-dom"
+import DataContext from "../context/DataContext"
 
 const Login = () => {
 
 
-    // validate form fields and store error message in this object
-    const [error, setError] = useState({
-        nameError: "",
-        emailError: "",
-        passwordError: "",
-    });
+    const { submitted, setSubmitted, errorFlag, setErrorFlag,
+        users, setUsers, error, setError, loginMessage,
+        setLoginMessage, correctLogin, newUser, setNewUser, setCorrectLogin,
+        loginDetails, setLoginDetails, } = useContext(DataContext);
+
+    const history = useHistory();
 
 
 
-    // check if Login details match user info and show this message
-    const [loginMessage, setLoginMessage] = useState({
-       message: ""
-    })
-
-
-    // if login details match set this boolean to true
-    const [correctLogin, setCorrectLogin] = useState(false);
-    
-
-
-    // array of all users
-    const [users, setUsers] = useState([])
-
-    // collect user information from form and store in this object
-    const [loginDetails, setLoginDetails] = useState({
-        name: "",
-        email: "",
-        password: ""
-    });
-
-    // validate form field and set this flag to true or false if there is an error
-    const [errorFlag, setErrorFlag] = useState(false)
-
-    //submitted
-    const [submitted, setSubmitted] = useState(false)
-
-
-    useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await api.get('./users');
-        // if (response && response.data) setPosts(response.data);
-        setUsers(response.data)
-      } catch (err) {
-        if (err.response) {
-          //not in the response range
-          console.log(err.response.data);
-          console.log(err.response.status);
-          console.log(err.response.headers)
-        } else {
-          console.log(`Error: ${err.message}`);
-        }
-      }
-    }
-
-    fetchPosts();
-  }, [])
 
     const formValidation = () => {
         // deconstruct user information and check for errors
@@ -100,6 +51,13 @@ const Login = () => {
                 setLoginMessage({ ...loginMessage, message: "Welcome" })
                 //if login details match 
                 setCorrectLogin(true)
+                setNewUser({ ...newUser, name: thisUser.name })
+                history.push("/welcome");
+                setLoginDetails({
+                    name: "",
+                    email: "",
+                    password: "",
+                })
             } else {
                 //message for when login details match
                 setLoginMessage({ ...loginMessage, message: "did not match" })
@@ -129,23 +87,13 @@ const Login = () => {
 
 
     return (
-        <>
-        
-            {correctLogin ?
-                
-                <Welcome loginDetails={loginDetails} setLoginDetails={setLoginDetails} />
-                
-                :
-
-                <section className="">
-
-                    {/* find out if password or name match */}
-                    {submitted &&
-                        <div className={correctLogin ? "alert alert-success" : "alert alert-danger"}>{loginMessage.message}</div>
-                    }
+        <>     
+            <section className="">
 
                     <h3 className="text-success mt-4 mb-3">Log In</h3>
                     <div className="container mt-2">
+                    
+
           
                         <form action="" className="row d-flex flex-column justify-content-center align-items-center">
                             <div className="mb-3 col-md-5">
@@ -198,10 +146,7 @@ const Login = () => {
                             <Link to="/"><button className="btn btn-primary">Sign Up</button></Link>
                         </p>
                     </div>
-                </section>
-
-            }
-    
+                </section>    
         </>
     )
 }

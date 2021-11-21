@@ -1,58 +1,23 @@
-import { useState, useEffect } from "react";
-import {Link} from "react-router-dom"
+import {useContext } from "react";
+import { Link, useHistory} from "react-router-dom"
 import api from "../api/posts"
+import DataContext from "../context/DataContext"
 
 const Content = () => {
 
-  // check for error in login details
-  const [error, setError] = useState({
-    nameError: "",
-    emailError: "",
-    passwordError: "",
-  });
+  const { users, setUsers, signInErrorFlag, setSignInErrorFlag,
+    signInSubmitted, setSignInSubmitted,
+    signInDetails, setSignInDetails,
+    signInError, setSignInError, newUser, setNewUser } = useContext(DataContext);
 
-  const [submitted, setSubmitted] = useState(false);
+  const history = useHistory();
 
-  // check for error in form validation (Boolean)
-  const [errorFlag, setErrorFlag] = useState(false);
-
-  // users array to store all users
-  const [users, setUsers] = useState([])
-
-
-  // collect user Information
-  const [details, setDetails] = useState({
-    name: "",
-    email: "",
-    password: "",
-  })
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await api.get('./users');
-        // if (response && response.data) setPosts(response.data);
-        setUsers(response.data)
-      } catch (err) {
-        if (err.response) {
-          //not in the response range
-          console.log(err.response.data);
-          console.log(err.response.status);
-          console.log(err.response.headers)
-        } else {
-          console.log(`Error: ${err.message}`);
-        }
-      }
-    }
-
-    fetchPosts();
-  }, [])
-
+ 
 
   // function to add user information to JSON server
   const addUser = async(details) => {
     const id = users.length ? users[users.length - 1].id + 1 : 1;
-    const newUser = { id, ...details };
+    const newUser = { id, ...signInDetails };
     try {
       const send = await api.post(`/users`, newUser);
       const newList = [...users, send.data];
@@ -66,25 +31,25 @@ const Content = () => {
   // function to validate form field input
   const formValidation = () => {
     // deconstruct user information and check for errors
-    const { name, email, password } = details;
+    const { name, email, password } = signInDetails;
     let isValid = true;
     if (name.trim().length < 6 || name === "") {
       const nameError = "username must be higher than 6";
-      setError({...error, nameError})
+      setSignInError({...signInError, nameError})
       isValid = false;
     }
     if (email === "") {
        const emailError = "email cannot be empty";
       isValid = false;
-      setError({ ...error, emailError })
+      setSignInError({ ...signInError, emailError })
     }
     if (password.trim().length < 6 || password === "") {
       const passwordError = "password must be higher than 6";
       isValid = false;
-      setError({ ...error, passwordError })
+      setSignInError({ ...signInError, passwordError })
     }
     
-    setErrorFlag(isValid)
+    setSignInErrorFlag(isValid)
     return isValid
   }
 
@@ -94,17 +59,19 @@ const Content = () => {
   // function to run when form is submitted
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log(details)
+    console.log(signInDetails)
     const isValid = formValidation();
     if (!isValid) {
       return
     } else {
-      addUser(details)
-      setSubmitted(true)
+      addUser(signInDetails)
+      setNewUser({...newUser, name: signInDetails.name})
+      setSignInSubmitted(true)
+      history.push("/welcome");
    }
 
     //clear out login details field
-    setDetails({
+    setSignInDetails({
       name: "",
       email: "",
       password: "",
@@ -120,7 +87,7 @@ const Content = () => {
         <h3 className="text-success mt-4 mb-3">Sign Up</h3>
         <div className="container mt-5">
             
-            {submitted && errorFlag ? <div className="alert alert-primary text-center"><p>Submitted Successfully</p></div> : null}
+            {(signInSubmitted && signInErrorFlag) ? <div className="alert alert-primary text-center"><p>Submitted Successfully</p></div> : null}
           
             <form action="" className="row d-flex flex-column justify-content-center align-items-center">
                 <div className="mb-3 col-md-5">
@@ -129,10 +96,10 @@ const Content = () => {
                       id="first-name"
                       required
                       placeholder="Name"
-                      value={details.name}
-                      onChange={e => setDetails({...details, name: e.target.value})}
+                      value={signInDetails.name}
+                      onChange={e => setSignInDetails({...signInDetails, name: e.target.value})}
               />
-              {!errorFlag && <p style={{color:"red"}}>{ error.nameError }</p>}
+              {!signInErrorFlag && <p style={{color:"red"}}>{ signInError.nameError }</p>}
                 </div>
             
                 <div className="mb-3 col-md-5">
@@ -141,10 +108,10 @@ const Content = () => {
                       id="email"
                       required
                       placeholder="email"
-                      value={details.email}
-                      onChange={e => setDetails({...details, email: e.target.value})}
+                      value={signInDetails.email}
+                      onChange={e => setSignInDetails({...signInDetails, email: e.target.value})}
               />
-              {!errorFlag && <p style={{color:"red"}}>{error.emailError}</p>}
+              {!signInErrorFlag && <p style={{color:"red"}}>{signInError.emailError}</p>}
                 </div>
             
             
@@ -154,10 +121,10 @@ const Content = () => {
                     id="password"
                     required
                     placeholder="password"
-                    value={details.password}
-                    onChange={e => setDetails({...details, password: e.target.value})}
+                    value={signInDetails.password}
+                    onChange={e => setSignInDetails({...signInDetails, password: e.target.value})}
               />
-              {!errorFlag && <p style={{color:"red"}}>{error.passwordError}</p>}
+              {!signInErrorFlag && <p style={{color:"red"}}>{signInError.passwordError}</p>}
               </div>
             
             
