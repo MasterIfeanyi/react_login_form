@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "ezekiel",
+      "email": "chimaifeanyi29@gmail.com",
+      "password": "ezekiel123"
+    },
+    {
+      "id": 2,
+      "name": "ifeanyi",
+      "email": "chimaifeanyi29@gmail.com",
+      "password": "ifeanyi123"
+    },
+    {
+      "id": 3,
+      "name": "ndubuisi",
+      "email": "prondubuisi@gmail.com",
+      "password": "blackman"
+    }
+  ]
+}
