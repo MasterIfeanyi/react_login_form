@@ -58,7 +58,7 @@ const Login = () => {
                     email: "",
                     password: "",
                 })
-            } else {
+             } else {
                 //message for when login details match
                 setLoginMessage({ ...loginMessage, message: "did not match" })
                 //if login details match 
@@ -93,7 +93,7 @@ const Login = () => {
                     <h3 className="text-success mt-4 mb-3">Log In</h3>
                     <div className="container mt-2">
                     
-
+                    {(submitted && !correctLogin) && <div className="alert alert-danger">{loginMessage.message}</div> }
           
                         <form action="" className="row d-flex flex-column justify-content-center align-items-center">
                             <div className="mb-3 col-md-5">
