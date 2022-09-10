@@ -1,8 +1,6 @@
 # Getting Started
 
 
-This project is aimed at deepening my understanding of several technologies such as `redux`, `json-server`
-
 Click the link [login-form](https://ifeanyi-login-form.glitch.me) to view the project in the browser.
 
 ## Available Scripts
